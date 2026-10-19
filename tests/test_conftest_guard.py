@@ -105,3 +105,34 @@ def test_live_tests_keep_the_real_socket_env(monkeypatch):
 
 def test_normal_tests_get_an_isolated_socket_env(tmp_path):
     assert os.environ["HERDR_SOCKET_PATH"].startswith(str(tmp_path))
+
+
+def test_real_subprocess_also_covers_the_posix_spawn_path(real_subprocess, monkeypatch):
+    """CPython's subprocess takes os.posix_spawn instead of _posixsubprocess.fork_exec on newer glibc
+    (CI on Python 3.13). Force that path here so the opt-out is proven on every interpreter."""
+    monkeypatch.setattr(subprocess, "_USE_POSIX_SPAWN", True)
+    assert not is_blocked(os.posix_spawn)
+    real_spawn, calls = os.posix_spawn, []
+
+    def recording(*args, **kw):
+        calls.append(args[0])
+        return real_spawn(*args, **kw)
+
+    monkeypatch.setattr(os, "posix_spawn", recording)
+    assert subprocess.run(["/bin/true"], close_fds=False).returncode == 0
+    assert calls == ["/bin/true"]  # the posix_spawn path really ran
+    assert is_blocked(os.kill)
+
+
+def test_posix_spawn_stays_blocked_without_the_opt_out():
+    assert is_blocked(os.posix_spawn)
+    if hasattr(os, "posix_spawnp"):
+        assert is_blocked(os.posix_spawnp)
+
+
+def test_forced_posix_spawn_path_without_opt_out_hits_the_guard(monkeypatch):
+    """The default guard must also stop CPython's posix_spawn path, not only fork_exec."""
+    from conftest import REAL_POPEN
+    monkeypatch.setattr(subprocess, "_USE_POSIX_SPAWN", True)
+    with pytest.raises(AssertionError, match="unmocked real side effect: os.posix_spawn"):
+        REAL_POPEN(["/bin/true"], close_fds=False)

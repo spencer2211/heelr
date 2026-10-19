@@ -4,8 +4,10 @@ Nothing in the suite should touch the user's live herdr/tmux, so every spawn, ex
 socket connect is replaced by a stub that raises. A test that needs one stubs that specific function
 itself (monkeypatch overrides this guard). Three explicit, narrow opt-outs exist:
 
-- the `real_subprocess` fixture restores subprocess.run/Popen only, for a test that runs a known-safe
-  local program (the update tests run a fake herdr binary written to tmp_path);
+- the `real_subprocess` fixture restores subprocess.run/Popen and both spawn paths under them, for a test
+  that runs a known-safe local program (the update tests run a fake herdr binary written to tmp_path).
+  CPython's subprocess uses _posixsubprocess.fork_exec, or os.posix_spawn when glibc allows it (CI on
+  Python 3.13), so the fixture restores fork_exec, posix_spawn and posix_spawnp;
 - the `real_signals` fixture restores os.kill/os.killpg only, for a test that signals a process it
   started itself (the selftest teardown tests, which stop their own fake server);
 - `@pytest.mark.real_processes` lifts the whole guard, for tests/test_live.py, which drives a throwaway
@@ -23,6 +25,8 @@ import pytest
 # The real functions, captured at import (before any fixture blocks them), for the opt-outs.
 REAL_RUN, REAL_POPEN = subprocess.run, subprocess.Popen
 REAL_FORK_EXEC = _posixsubprocess.fork_exec
+REAL_POSIX_SPAWN = getattr(os, "posix_spawn", None)
+REAL_POSIX_SPAWNP = getattr(os, "posix_spawnp", None)
 REAL_KILL, REAL_KILLPG = os.kill, os.killpg
 
 SUBPROCESS_CALLS = ("run", "Popen", "call", "check_call", "check_output", "getoutput", "getstatusoutput")
@@ -63,11 +67,15 @@ def no_real_side_effects(request, monkeypatch):
 
 @pytest.fixture
 def real_subprocess(monkeypatch):
-    """Opt-in: restore subprocess.run/Popen (run needs Popen) for a test that runs a known-safe local
+    """Opt-in: restore subprocess.run/Popen (run needs Popen) and both spawn paths under them
+    (_posixsubprocess.fork_exec and os.posix_spawn/posix_spawnp) for a test that runs a known-safe local
     program. Everything else (os.kill, exec, sockets) stays blocked."""
     monkeypatch.setattr(subprocess, "Popen", REAL_POPEN)
     monkeypatch.setattr(subprocess, "run", REAL_RUN)
     monkeypatch.setattr(_posixsubprocess, "fork_exec", REAL_FORK_EXEC)
+    for name, real in (("posix_spawn", REAL_POSIX_SPAWN), ("posix_spawnp", REAL_POSIX_SPAWNP)):
+        if real is not None:
+            monkeypatch.setattr(os, name, real)
     return REAL_RUN
 
 

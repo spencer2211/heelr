@@ -3,6 +3,10 @@
 Versions follow [semver](https://semver.org). Before 1.0, a breaking config or CLI change bumps the
 minor version; features and fixes bump the patch. Tags are `vX.Y.Z`.
 
+## Unreleased
+
+- Tests: the subprocess opt-out also covers CPython's posix_spawn path (CI on Python 3.13).
+
 ## 0.4.0
 
 - First public release: MIT licence, contributing guide, issue forms, CI. Removed the personal upgrade tooling (`bin/herdr-upgrade`, `bin/herdr-subreaper`).
