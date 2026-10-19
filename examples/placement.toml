@@ -1,0 +1,13 @@
+# Copy to ~/.config/heelr/placement.toml. Placement is off until enabled = true.
+[placement]
+enabled = false
+workspace = "{repo}"        # one workspace per repo
+tab = "{task}"              # one tab per task; tab = "{repo}" for one tab per repo
+# ticket = 'GH-\d+'         # pull ticket ids out of worktree / branch names
+create_workspaces = true
+# classify = "~/.config/heelr/classify.sh"   # stdin: pane facts JSON; stdout: {"role","repo","task"}
+# burst_window = 0.75       # seconds; new panes closer together than this are a burst
+
+[placement.shape]
+default = "agents-logs"     # layout for each placed tab
+# by_tab = { main = "main-left" }

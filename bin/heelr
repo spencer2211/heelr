@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Entry point: resolve the repo through the symlink and run the package.
+here="$(dirname "$(readlink -f "$0")")"
+PYTHONPATH="$here/.." exec python3 -m heelr "$@"

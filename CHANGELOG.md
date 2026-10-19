@@ -1,0 +1,37 @@
+# Changelog
+
+Versions follow [semver](https://semver.org). Before 1.0, a breaking config or CLI change bumps the
+minor version; features and fixes bump the patch. Tags are `vX.Y.Z`.
+
+## 0.4.0
+
+- First public release: MIT licence, contributing guide, issue forms, CI. Removed the personal upgrade tooling (`bin/herdr-upgrade`, `bin/herdr-subreaper`).
+- Tab colours: a sleeping park tab (`💤 heelr-park`) no longer takes a colour slot.
+
+## 0.3.1
+
+- A tab's ↗N counts the focused pane too, so it shows the same number wherever you are; the
+  focus hooks that refreshed it are gone. `sort` still never moves the focused pane.
+
+## 0.3.0
+
+- Drift marks replace `drift-status`: with placement on, each tab holding panes that belong elsewhere
+  shows how many after its name (`herdr/heelr ↗2`), refreshed on pane and focus events, `sort`,
+  `pull`, `back`, `tag` and folder reports. **Breaking:** `heelr drift-status` is gone; remove its
+  `[[ui.tab_bar_right]]` entry from Herdr's config.
+- Every label comparison (placement, sleep, layouts, tab colours) ignores the ` ↗N` suffix.
+
+## 0.2.0
+
+- Placement (off by default): new panes go to the workspace and tab of their (repo, task); `sort`,
+  `pull`, `tag`, `report`, `drift-status`, `shell-hook`; adapter examples for Claude Code, Codex,
+  opencode.
+- `apply`, `auto`, `back`, `promote`, `nudge` and `save --tabs` now also take the shared
+  `<socket>.layout.lock` that other Herdr layout plugins use (`sleep` and `wake` don't: they don't
+  reshape layouts).
+- `heelr --version`.
+
+## 0.1.0
+
+Baseline: layouts (apply, back, save, presets, picker), promote, nudge, multi-tab layouts, auto-tile,
+tab sleep/wake, the tab-colours plugin, selftest, check-update.

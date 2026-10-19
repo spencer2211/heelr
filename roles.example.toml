@@ -1,0 +1,12 @@
+# Copy to ~/.config/heelr/roles.toml to override. First match wins.
+[[roles]]
+name = "agent"
+agent = true            # Herdr detected an agent (Claude, opencode, Codex, ...)
+
+[[roles]]
+name = "logs"
+cmd = 'kubectl\s+logs|tail\s+-f|journalctl'   # regex on the foreground command line
+
+[[roles]]
+name = "shell"
+fallback = true

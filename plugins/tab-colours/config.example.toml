@@ -1,0 +1,9 @@
+# heelr tab-colours plugin config. Copy to "$(herdr plugin config-dir heelr.tab-colours)/config.toml".
+#
+# [pins]: tabs whose label starts with PREFIX always use this colour instead of an automatic
+# slot; automatic slots avoid pinned colours while other colours are free. After changing pins,
+# regenerate the sidebar rows: python3 tab_colours.py sidebar
+[pins]
+"coordinator" = "#fabd2f"
+"review" = "#8ec07c"
+"overflow" = "#928374"

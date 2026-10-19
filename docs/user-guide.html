@@ -1,0 +1,675 @@
+<title>heelr Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a reference manual — sticky contents rail on wide screens, one reading column, panes drawn as tiled terminals. Palette borrows Herdr's gruvbox theme. */
+:root {
+  --bg: #f6f5f0;
+  --surface: #ecebe3;
+  --fg: #282828;
+  --muted: #5f5a52;
+  --rule: #d6d3c6;
+  --accent: #9d5f0e;
+  --aqua: #3f7556;
+  --pane: #fdfcf8;
+  --pane-main: #f3e2b8;
+  --code-bg: #282828;
+  --code-fg: #ebdbb2;
+  --warn: #9d0006;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1d2021; --surface: #282828; --fg: #ebdbb2; --muted: #a89984; --rule: #3c3836;
+    --accent: #fabd2f; --aqua: #8ec07c; --pane: #32302f; --pane-main: #504024;
+    --code-bg: #141617; --code-fg: #ebdbb2; --warn: #fb4934; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1d2021; --surface: #282828; --fg: #ebdbb2; --muted: #a89984; --rule: #3c3836;
+  --accent: #fabd2f; --aqua: #8ec07c; --pane: #32302f; --pane-main: #504024;
+  --code-bg: #141617; --code-fg: #ebdbb2; --warn: #fb4934; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.65 var(--font-body);
+  padding-inline: 20px; padding-block: 0 64px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 56px; }
+@media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+
+/* contents rail */
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; padding-top: 48px; max-height: 100vh; overflow-y: auto; }
+nav.toc .label { font: 600 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+nav.toc a { display: block; padding: 4px 10px; border-left: 2px solid var(--rule); color: var(--muted); text-decoration: none; font-size: 14px; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--fg); border-left-color: var(--accent); }
+@media (max-width: 860px) {
+  nav.toc { position: static; padding-top: 24px; max-height: none; }
+  nav.toc ol { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}
+
+main { min-width: 0; padding-top: 48px; }
+.mast { padding-bottom: 28px; border-bottom: 1px solid var(--rule); margin-bottom: 8px; }
+.mast .cmd { font: 600 13px/1 var(--font-mono); color: var(--aqua); letter-spacing: .02em; }
+h1 { font: 700 clamp(40px, 6vw, 60px)/1.02 var(--font-display); letter-spacing: -.02em; margin: 10px 0 14px; text-wrap: balance; }
+.lede { font-size: 19px; max-width: 62ch; color: var(--fg); margin: 0; }
+.lede + .lede { margin-top: 10px; color: var(--muted); font-size: 16px; }
+
+section { padding-top: 40px; scroll-margin-top: 16px; }
+h2 { font: 700 28px/1.2 var(--font-display); letter-spacing: -.01em; margin: 0 0 14px; text-wrap: balance; }
+h3 { font: 600 19px/1.3 var(--font-body); margin: 28px 0 8px; }
+p, ul, ol { max-width: 68ch; }
+p { margin: 0 0 12px; }
+ul, ol { padding-left: 1.3em; margin: 0 0 14px; }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+strong { font-weight: 600; }
+
+code { font: 0.88em var(--font-mono); background: var(--surface); padding: 1px 5px; border-radius: 3px; }
+pre { background: var(--code-bg); color: var(--code-fg); font: 13.5px/1.6 var(--font-mono); padding: 16px 18px; border-radius: 6px; overflow-x: auto; margin: 0 0 16px; max-width: 76ch; }
+pre code { background: none; padding: 0; font-size: inherit; color: inherit; }
+pre .c { color: #928374; }
+pre .k { color: #fabd2f; }
+pre .s { color: #b8bb26; }
+
+kbd {
+  font: 600 13px/1 var(--font-mono); display: inline-block; padding: 4px 7px 5px;
+  border: 1px solid var(--rule); border-bottom-width: 3px; border-radius: 5px;
+  background: var(--pane); color: var(--fg); white-space: nowrap;
+}
+
+.table { overflow-x: auto; margin: 0 0 18px; max-width: 76ch; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th { text-align: left; font: 600 11px/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 8px 12px 8px 0; border-bottom: 1px solid var(--rule); }
+td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+td:first-child { white-space: nowrap; }
+
+.note { border-left: 3px solid var(--aqua); padding: 10px 16px; background: var(--surface); max-width: 68ch; margin: 0 0 16px; border-radius: 0 6px 6px 0; }
+.note p:last-child { margin-bottom: 0; }
+
+/* quick start keystrokes */
+.steps { display: grid; gap: 10px; counter-reset: step; list-style: none; padding: 0; max-width: 68ch; }
+.steps li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; align-items: baseline; margin: 0; }
+.steps li::before { counter-increment: step; content: counter(step); font: 600 13px/1 var(--font-mono); color: var(--accent); }
+
+/* preset miniatures: panes drawn as tiled terminals */
+.presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px 16px; margin: 6px 0 20px; max-width: 76ch; }
+.preset figcaption { font: 600 13px/1.3 var(--font-mono); margin-top: 8px; }
+.preset figcaption span { display: block; font: 400 13px/1.4 var(--font-body); color: var(--muted); margin-top: 2px; }
+.preset figure { margin: 0; }
+.mini { aspect-ratio: 16 / 10; max-width: 100%; display: grid; gap: 3px; padding: 3px; background: var(--rule); border-radius: 5px; }
+.mini i { background: var(--pane); border-radius: 2px; display: block; }
+.mini i.m { background: var(--pane-main); position: relative; }
+.mini i.m::after { content: "main"; position: absolute; left: 6px; top: 4px; font: 600 10px/1 var(--font-mono); color: var(--accent); }
+.ml { grid-template-columns: 3fr 2fr; grid-template-rows: repeat(3, 1fr); }
+.ml .m { grid-row: 1 / 4; }
+.mt { grid-template-rows: 3fr 2fr; grid-template-columns: repeat(3, 1fr); }
+.mt .m { grid-column: 1 / 4; }
+.gr { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; }
+.gr i:last-child { grid-row: 1 / 3; }
+.ec { grid-template-columns: repeat(4, 1fr); }
+.er { grid-template-rows: repeat(4, 1fr); }
+.mr { grid-template-columns: 2fr 3fr; grid-template-rows: repeat(3, 1fr); }
+.mr .m { grid-column: 2; grid-row: 1 / 4; }
+.mb { grid-template-rows: 2fr 3fr; grid-template-columns: repeat(3, 1fr); }
+.mb .m { grid-column: 1 / 4; grid-row: 2; }
+.mg { grid-template-columns: 2fr 1fr 1fr; grid-template-rows: repeat(2, 1fr); }
+.mg .m { grid-row: 1 / 3; }
+.mc { grid-template-columns: 1fr 2fr 1fr; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; }
+.mc .m { grid-row: 1 / 3; }
+.tm { grid-template-columns: repeat(6, 1fr); grid-template-rows: 13fr 7fr; }
+.tm i { grid-column: span 2; }
+.tm i.m { grid-column: span 3; }
+.al { grid-template-columns: repeat(6, 1fr); grid-template-rows: 7fr 7fr 6fr; }
+.al i { grid-column: span 3; }
+.al i.lg { grid-column: span 6; }
+.mini i.a { background: var(--pane-main); }
+
+/* fixed-layout tree illustration */
+.split-demo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: center; max-width: 76ch; margin-bottom: 16px; }
+@media (max-width: 620px) { .split-demo { grid-template-columns: minmax(0, 1fr); } }
+.tree-mini { grid-template-columns: 3fr 2fr; grid-template-rows: 1fr 1fr; }
+.tree-mini i { display: grid; place-items: center; font: 600 11px/1.2 var(--font-mono); color: var(--muted); text-align: center; padding: 4px; }
+.tree-mini i.m { grid-row: 1 / 3; color: var(--accent); }
+.tree-mini i.m::after { content: none; }
+.tree-mini b { display: block; font-weight: 400; font-size: 10px; }
+
+.place { list-style: none; padding: 0; counter-reset: p; }
+.place li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; }
+.place li::before { counter-increment: p; content: counter(p); font: 600 13px/1.65 var(--font-mono); color: var(--accent); }
+
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 14px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Contents">
+    <div class="label">Contents</div>
+    <ol>
+      <li><a href="#quick-start">Quick start</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#keys">Keys</a></li>
+      <li><a href="#commands">Commands</a></li>
+      <li><a href="#rule">Rule layouts</a></li>
+      <li><a href="#fixed">Fixed layouts</a></li>
+      <li><a href="#multi">Multi-tab layouts</a></li>
+      <li><a href="#roles">Roles</a></li>
+      <li><a href="#placement">Placement</a></li>
+      <li><a href="#save-undo">Saving &amp; undoing</a></li>
+      <li><a href="#auto-tile">Auto-tile</a></li>
+      <li><a href="#files">Files &amp; config</a></li>
+      <li><a href="#trouble">Troubleshooting</a></li>
+      <li><a href="#upgrade">After a Herdr upgrade</a></li>
+      <li><a href="#plugin">The heelr plugin</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="mast">
+      <div class="cmd">$ heelr apply grid</div>
+      <h1>heelr user guide</h1>
+      <p class="lede">heelr rearranges the panes you already have in Herdr into a named layout, and lets you switch between layouts whenever you like.</p>
+      <p class="lede">Nothing restarts. Your Claude sessions, shells and log tails keep running and only change where they sit on screen.</p>
+    </header>
+
+    <section id="quick-start">
+      <h2>Quick start</h2>
+      <p>From the tab you want to rearrange:</p>
+      <ol class="steps">
+        <li><span>Press <kbd>ctrl+b</kbd> then <kbd>m</kbd>. A menu opens with a row of layout pictures.</span></li>
+        <li><span>Use <kbd>←</kbd>/<kbd>→</kbd> to highlight one and press <kbd>Enter</kbd>, or press its key (<kbd>1</kbd> is the first). The tab rearranges and the menu closes.</span></li>
+        <li><span>Didn't like it? Press <kbd>ctrl+b</kbd> then <kbd>u</kbd> to undo.</span></li>
+        <li><span>Want a different pane in the big slot? Focus it and press <kbd>ctrl+b</kbd> <kbd>Enter</kbd>. Want the big slot bigger? <kbd>ctrl+b</kbd> <kbd>=</kbd>, and <kbd>ctrl+b</kbd> <kbd>-</kbd> to shrink it.</span></li>
+      </ol>
+      <p>The same from a shell:</p>
+<pre><code>heelr apply grid -n   <span class="c"># preview the moves, change nothing</span>
+heelr apply grid      <span class="c"># do it</span>
+heelr back            <span class="c"># undo</span></code></pre>
+    </section>
+
+    <section id="how">
+      <h2>How it works</h2>
+      <div class="table"><table>
+        <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Layout</strong></td><td>A named shape for a tab, or for a whole workspace. Stored as a small TOML file.</td></tr>
+          <tr><td><strong>Slot</strong></td><td>One position in a layout. Each slot holds one pane.</td></tr>
+          <tr><td><strong>Main slot</strong></td><td>The slot for the pane you're working in. It gets your focused pane, if that pane's role fits.</td></tr>
+          <tr><td><strong>Role</strong></td><td>What a pane is: <code>agent</code>, <code>logs</code> or <code>shell</code>, detected automatically. Layouts can ask for a role in a slot.</td></tr>
+          <tr><td><strong>Ratio</strong></td><td>How a split divides its space. <code>0.6</code> gives the <em>first</em> side (left or top) 60%. Sizes are proportions, so a layout works at any window size.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>What an apply does</h3>
+      <ol>
+        <li>Reads the tab from Herdr in one snapshot.</li>
+        <li>Decides which pane goes in which slot (see <a href="#roles">Roles</a>).</li>
+        <li>Moves panes into place. Herdr can't move a pane to a new spot within the same tab, so heelr briefly moves panes to a temporary tab called <code>heelr-park</code> and then back. That tab closes itself once it's empty, so you may see a tab flicker in the tab bar.</li>
+        <li>Re-reads the tab and checks it matches. If it doesn't, it tells you what differs.</li>
+      </ol>
+
+      <h3>Safety</h3>
+      <ul>
+        <li>It never closes a pane or stops a process you started. It moves panes, and creates new shells only when a layout says <code>add_missing = true</code> (or <code>on_mismatch = "fill"</code>) and has slots with no pane.</li>
+        <li>The one thing it closes: <code>back</code> closes panes the undone apply created, if the shell is at its prompt or still running only <code>new_pane_command</code>. A created pane with something else running in it is kept and moved to the <code>overflow</code> tab. A shell at its prompt counts as unused even if you ran commands in it, so see <a href="#save-undo">Saving &amp; undoing</a> before doing real work in one.</li>
+        <li>If a layout already matches, nothing moves.</li>
+        <li>Only one apply or <code>back</code> runs at a time. A second one started meanwhile (say, <code>prefix+u</code> pressed twice) is refused and leaves the undo point alone.</li>
+        <li>If something fails partway, it stops, nothing is closed, and <code>heelr back</code> takes you to where you started. Until you do, the <code>heelr-park</code> tab stays open and every apply in that workspace refuses, so the half-done state can't become the undo point.</li>
+      </ul>
+    </section>
+
+    <section id="keys">
+      <h2>Keys</h2>
+      <div class="table"><table>
+        <thead><tr><th>Key</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>ctrl+b</kbd> <kbd>m</kbd></td><td>Layout menu: one row of layout thumbnails (shaded = main pane), opening on the tab's current layout. <kbd>←</kbd>/<kbd>→</kbd> (or <kbd>h</kbd>/<kbd>l</kbd>) move the highlight and <kbd>Enter</kbd> applies it; a layout's key (<kbd>1</kbd>–<kbd>5</kbd> are your favourites, then every other layout in order) applies it at once; <kbd>b</kbd> undoes; <kbd>q</kbd> or <kbd>Esc</kbd> cancels.</td></tr>
+          <tr><td><kbd>ctrl+b</kbd> <kbd>u</kbd></td><td>Undo the last layout change in this workspace.</td></tr>
+          <tr><td><kbd>ctrl+b</kbd> <kbd>Enter</kbd></td><td>Promote: swap the focused pane with the tab's largest pane (ties: the top-left one). Nothing else moves. Already the largest: a notification says so. <kbd>ctrl+b</kbd> <kbd>u</kbd> swaps them back.</td></tr>
+          <tr><td><kbd>ctrl+b</kbd> <kbd>a</kbd></td><td>Auto-tile off / on for this tab (see <a href="#auto-tile">Auto-tile</a>). A notification says which.</td></tr>
+          <tr><td><kbd>ctrl+b</kbd> <kbd>=</kbd> / <kbd>-</kbd></td><td>Nudge: make the main area 10% bigger / smaller (between 20% and 80%) by moving dividers; no pane moves. heelr remembers the size for this tab, so applying the same layout here later keeps it. Works on the layout heelr last applied to the tab, if it has a main area (not <code>grid</code> or <code>even-*</code>). If the tab has changed shape since, the layout is applied again at the new size. Not undoable with <kbd>ctrl+b</kbd> <kbd>u</kbd>: nudge the other way.</td></tr>
+        </tbody>
+      </table></div>
+      <p>The menu acts on the tab you're looking at. Multi-tab layouts appear in it too, and act on the whole workspace.</p>
+      <p><kbd>b</kbd> means undo only <strong>inside</strong> the menu. Outside it, undo is <kbd>ctrl+b</kbd> <kbd>u</kbd>; <kbd>ctrl+b</kbd> <kbd>b</kbd> is Herdr's own key for collapsing the sidebar.</p>
+      <p>Errors from the undo, promote, nudge and auto-tile keys appear as a Herdr notification, because they run in the background. If a pick in the menu fails or changes nothing (the tab is already in that layout), the menu stays open with the reason until you press a key; otherwise it closes as soon as the layout is applied.</p>
+    </section>
+
+    <section id="commands">
+      <h2>Commands</h2>
+      <div class="table"><table>
+        <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>heelr list</code></td><td>Lists every layout: built-in presets and your own.</td></tr>
+          <tr><td><code>heelr show &lt;name&gt; [-n N]</code></td><td>Draws a layout. For presets, <code>-n</code> sets how many panes to draw (default 4).</td></tr>
+          <tr><td><code>heelr current</code></td><td>Draws the tab as it is now, with each pane's id and detected role.</td></tr>
+          <tr><td><code>heelr apply &lt;name&gt; [-n]</code></td><td>Rearranges into a layout. <code>-n</code> prints the planned moves and changes nothing. <code>&lt;name&gt;</code> can also be a path to a <code>.toml</code> file.</td></tr>
+          <tr><td><code>heelr back [-n]</code></td><td>Undoes the last layout change in the workspace. Running it again flips back.</td></tr>
+          <tr><td><code>heelr save &lt;name&gt;</code></td><td>Saves the tab as an editable layout file. Add <code>--force</code> to overwrite.</td></tr>
+          <tr><td><code>heelr save &lt;name&gt; --tabs</code></td><td>Saves the whole workspace as a multi-tab layout.</td></tr>
+          <tr><td><code>heelr promote</code></td><td>Swaps the focused pane with the tab's largest pane (what <kbd>ctrl+b</kbd> <kbd>Enter</kbd> runs).</td></tr>
+          <tr><td><code>heelr nudge + | -</code></td><td>Grows or shrinks the main area of the tab's layout by 10% and remembers it for the tab (what <kbd>ctrl+b</kbd> <kbd>=</kbd> / <kbd>-</kbd> run).</td></tr>
+          <tr><td><code>heelr auto-toggle</code></td><td>Switches auto-tile off (or back on) for the tab (what <kbd>ctrl+b</kbd> <kbd>a</kbd> runs).</td></tr>
+          <tr><td><code>heelr auto</code></td><td>Re-tiles every laid-out tab whose panes changed. The plugin runs it on pane events; does nothing unless <code>auto_tile = true</code>.</td></tr>
+          <tr><td><code>heelr pick</code></td><td>The layout menu that <kbd>ctrl+b</kbd> <kbd>m</kbd> opens.</td></tr>
+          <tr><td><code>heelr selftest [--bin PATH] [--record]</code></td><td>Runs the live tests on a throwaway Herdr server. See <a href="#upgrade">After a Herdr upgrade</a>.</td></tr>
+          <tr><td><code>heelr check-update [--bin PATH]</code></td><td>Says whether a newer Herdr is out, and whether the running server needs a restart to pick up the installed binary.</td></tr>
+        </tbody>
+      </table></div>
+      <ul>
+        <li><code>--tab &lt;id&gt;</code> points <code>apply</code>, <code>back</code>, <code>save</code>, <code>current</code>, <code>pick</code>, <code>promote</code>, <code>nudge</code> or <code>auto-toggle</code> at a tab other than the focused one. Multi-tab layouts use that tab's workspace. Tab ids look like <code>wA:t1</code>; <code>herdr tab list</code> shows them.</li>
+        <li><code>heelr --allow-untested &lt;command&gt;</code> runs on a Herdr version heelr hasn't been tested with. See <a href="#upgrade">After a Herdr upgrade</a>.</li>
+      </ul>
+    </section>
+
+    <section id="rule">
+      <h2>Rule layouts</h2>
+      <p>Rule layouts work with any number of panes. Eleven ship with heelr; all but <code>grid</code> open new shells when the tab has too few panes to show the shape (see below). Your own layouts go in <code>~/.config/heelr/layouts/</code>, one file each; a file there with a preset's name replaces the preset.</p>
+      <div class="presets">
+        <figure class="preset"><div class="mini ml"><i class="m"></i><i></i><i></i><i></i></div><figcaption>main-left<span>Large pane left (60%), the rest stacked right.</span></figcaption></figure>
+        <figure class="preset"><div class="mini mt"><i class="m"></i><i></i><i></i><i></i></div><figcaption>main-top<span>Large pane on top (60%), the rest side by side below.</span></figcaption></figure>
+        <figure class="preset"><div class="mini gr"><i></i><i></i><i></i><i></i><i></i></div><figcaption>grid<span>Close to square. 5 panes become columns of 2, 2, 1.</span></figcaption></figure>
+        <figure class="preset"><div class="mini ec"><i></i><i></i><i></i><i></i></div><figcaption>even-columns<span>Equal columns.</span></figcaption></figure>
+        <figure class="preset"><div class="mini er"><i></i><i></i><i></i><i></i></div><figcaption>even-rows<span>Equal rows.</span></figcaption></figure>
+        <figure class="preset"><div class="mini mr"><i></i><i class="m"></i><i></i><i></i></div><figcaption>main-right<span>Mirror of main-left: large pane on the right.</span></figcaption></figure>
+        <figure class="preset"><div class="mini mb"><i></i><i></i><i></i><i class="m"></i></div><figcaption>main-bottom<span>Mirror of main-top: large pane along the bottom.</span></figcaption></figure>
+        <figure class="preset"><div class="mini mg"><i class="m"></i><i></i><i></i><i></i><i></i></div><figcaption>main-left-grid<span>Large pane left (50%), the rest as a grid. Good with 5+ panes.</span></figcaption></figure>
+        <figure class="preset"><div class="mini mc"><i></i><i></i><i class="m"></i><i></i><i></i></div><figcaption>main-center<span>Large pane in the middle (50%), a stack on each side.</span></figcaption></figure>
+        <figure class="preset"><div class="mini tm"><i class="m"></i><i class="m"></i><i></i><i></i><i></i></div><figcaption>two-mains<span>Two large panes on top (65%), the rest in a row below.</span></figcaption></figure>
+        <figure class="preset"><div class="mini al"><i class="a"></i><i class="a"></i><i class="a"></i><i class="a"></i><i class="lg"></i></div><figcaption>agents-logs<span>By role: agents in a grid on top (70%), logs and shells in a row below. If every pane is an agent, it opens a new shell for the bottom row. With no agent at all it's a plain grid.</span></figcaption></figure>
+      </div>
+      <p>Make your own variant by writing a file:</p>
+<pre><code><span class="c"># ~/.config/heelr/layouts/wide-main.toml</span>
+<span class="k">name</span> = <span class="s">"wide-main"</span>
+<span class="k">kind</span> = <span class="s">"rule"</span>
+<span class="k">rule</span> = <span class="s">"main-left"</span>      <span class="c"># any rule name above</span>
+<span class="k">main_ratio</span> = 0.7        <span class="c"># share of the main area (ignored by grid / even-*)</span>
+<span class="k">main_role</span> = <span class="s">"agent"</span>     <span class="c"># optional: prefer an agent for the main pane</span></code></pre>
+      <p>The main pane is the one you have focused. With <code>main_role</code> set, it's your focused pane if it has that role, otherwise the first pane that does. Every other pane keeps its current order.</p>
+      <p>For <code>agents-logs</code>, <code>main_role</code> instead picks which role goes in the top band (default <code>agent</code>), and <code>main_ratio</code> is that band's height.</p>
+      <h3>Creating missing panes</h3>
+      <p>Two more settings work in any rule or fixed layout:</p>
+<pre><code><span class="k">add_missing</span> = true                         <span class="c"># open new shells for slots with no pane</span>
+<span class="k">new_pane_command</span> = <span class="s">"kubectl logs -f ..."</span>   <span class="c"># optional: run this in each new pane</span></code></pre>
+      <table>
+        <thead><tr><th>Layout</th><th>With <code>add_missing = true</code></th></tr></thead>
+        <tbody>
+          <tr><td><code>agents-logs</code></td><td>If every pane is an agent, one new shell is added along the bottom. With no agent, nothing is added (a new shell couldn't fill the agent band) and the tab is a plain grid. With <code>main_role</code> set, nothing is added if the new pane would itself have that role (<code>main_role = "shell"</code>, or a <code>new_pane_command</code> that matches it), since it couldn't fill the bottom row.</td></tr>
+          <tr><td><code>main-*</code> (including <code>main-center</code>), <code>main-left-grid</code></td><td>A tab with one pane gets a second, so the main pane has something beside it.</td></tr>
+          <tr><td><code>two-mains</code></td><td>Topped up to 3 panes: two on top, one below.</td></tr>
+          <tr><td><code>even-columns</code>, <code>even-rows</code></td><td>A tab with one pane gets a second, so there are two columns (rows).</td></tr>
+          <tr><td><code>grid</code></td><td>Nothing is ever missing: any number of panes is a grid.</td></tr>
+          <tr><td>Fixed layouts</td><td>Same as <code>on_mismatch = "fill"</code>: every empty slot gets a new pane.</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Every preset except <code>grid</code> has this on</strong>, so picking, say, <code>main-left</code> on a one-pane tab splits it instead of doing nothing. New panes are plain shells (no <code>new_pane_command</code>) and open in the tab's working folder. Once the tab has enough panes, these layouts only rearrange. <code>back</code> closes the new panes again.</p>
+      <p>A multi-tab layout that names one of these presets for a tab (<code>layout = "main-left"</code>) fills that tab the same way; inline <code>[tabs.layout]</code> tables have <code>add_missing</code> off unless they set it.</p>
+      <p>To turn it off for a preset, override it with a file of the same name:</p>
+<pre><code><span class="c"># ~/.config/heelr/layouts/main-left.toml</span>
+<span class="k">name</span> = <span class="s">"main-left"</span>
+<span class="k">kind</span> = <span class="s">"rule"</span>
+<span class="k">rule</span> = <span class="s">"main-left"</span>
+<span class="k">main_ratio</span> = 0.6
+<span class="k">add_missing</span> = false</code></pre>
+    </section>
+
+    <section id="fixed">
+      <h2>Fixed layouts</h2>
+      <p>A fixed layout spells out an exact shape with a set number of slots. The easiest way to get one is to arrange a tab by hand with Herdr's own split and resize keys, run <code>heelr save &lt;name&gt;</code>, and then edit the file.</p>
+      <p>The shape is a tree of splits. Each split has a direction, a ratio, and two children: <code>a</code> (left or top) and <code>b</code> (right or bottom). Each child is another split or a slot.</p>
+      <div class="split-demo">
+<pre><code><span class="c"># Agent left (60%); another agent above a log tail on the right.</span>
+<span class="k">name</span> = <span class="s">"agents-2x1-logs"</span>
+<span class="k">kind</span> = <span class="s">"fixed"</span>
+<span class="k">on_mismatch</span> = <span class="s">"fill"</span>     <span class="c"># refuse | fill</span>
+
+[root]
+<span class="k">dir</span> = <span class="s">"right"</span>            <span class="c"># right = side by side, down = stacked</span>
+<span class="k">ratio</span> = 0.6              <span class="c"># share of the FIRST child (a)</span>
+  [root.a]
+  <span class="k">role</span> = <span class="s">"agent"</span>
+  <span class="k">main</span> = true            <span class="c"># gets your focused pane</span>
+  [root.b]
+  <span class="k">dir</span> = <span class="s">"down"</span>
+  <span class="k">ratio</span> = 0.5
+    [root.b.a]
+    <span class="k">role</span> = <span class="s">"agent"</span>
+    [root.b.b]
+    <span class="k">role</span> = <span class="s">"logs"</span></code></pre>
+        <figure class="preset" style="margin:0"><div class="mini tree-mini"><i class="m">root.a<b>agent · main</b></i><i>root.b.a<b>agent</b></i><i>root.b.b<b>logs</b></i></div><figcaption>The file on the left draws this tab.</figcaption></figure>
+      </div>
+      <p>Slot options, both optional: <code>role = "agent"</code> prefers a pane with that role; <code>main = true</code> marks the slot for your focused pane.</p>
+      <h3>When the pane count doesn't match</h3>
+      <div class="table"><table>
+        <thead><tr><th><code>on_mismatch</code></th><th>Fewer panes than slots</th><th>More panes than slots</th></tr></thead>
+        <tbody>
+          <tr><td><code>refuse</code> (default)</td><td>Nothing changes; it tells you why.</td><td>Nothing changes; it tells you why.</td></tr>
+          <tr><td><code>fill</code> (same as <code>add_missing = true</code>)</td><td>Empty slots get new shells.</td><td>Extra panes move to a tab called <code>overflow</code>.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="multi">
+      <h2>Multi-tab layouts</h2>
+      <p>A multi-tab layout arranges a whole workspace. Each <code>[[tabs]]</code> entry is a labelled tab. heelr gathers matching panes into it from any tab in the workspace, then lays that tab out.</p>
+<pre><code><span class="c"># ~/.config/heelr/layouts/fleet.toml  (copy from examples/fleet.toml)</span>
+<span class="k">name</span> = <span class="s">"fleet"</span>
+<span class="k">kind</span> = <span class="s">"multi"</span>
+<span class="k">park_tab</span> = <span class="s">"overflow"</span>          <span class="c"># where panes no tab claims go</span>
+
+[[tabs]]
+<span class="k">label</span> = <span class="s">"agents"</span>
+<span class="k">gather</span> = [<span class="s">"agent"</span>]             <span class="c"># roles to pull in; "*" = any role</span>
+<span class="k">layout</span> = <span class="s">"grid"</span>                <span class="c"># a layout name ...</span>
+
+[[tabs]]
+<span class="k">label</span> = <span class="s">"ops"</span>
+<span class="k">gather</span> = [<span class="s">"logs"</span>, <span class="s">"shell"</span>]
+<span class="k">max</span> = 3                        <span class="c"># take at most 3 panes</span>
+  [tabs.layout]                <span class="c"># ... or a layout written inline</span>
+  <span class="k">kind</span> = <span class="s">"rule"</span>
+  <span class="k">rule</span> = <span class="s">"main-top"</span>
+  <span class="k">main_ratio</span> = 0.5</code></pre>
+      <h3>How panes are placed</h3>
+      <ol class="place">
+        <li><span>If a tab with the entry's label already exists, matching panes already in it stay there. That's why re-applying the same layout moves nothing.</span></li>
+        <li><span>Other matching panes are pulled in, earliest tab first, up to <code>max</code>.</span></li>
+        <li><span>A pane goes to the first entry that matches it, so put more specific entries first.</span></li>
+        <li><span>Every pane no entry claims moves to <code>park_tab</code>. Nothing is closed.</span></li>
+        <li><span>Missing tabs are created. Tabs left empty close, which is Herdr's own behaviour.</span></li>
+        <li><span>Each tab is then laid out with its <code>layout</code>. Leave <code>layout</code> out to keep whatever shape the panes land in. If one tab's layout fails, for example a fixed layout that refuses, the other tabs are still done.</span></li>
+      </ol>
+      <p>Labels must be unique and different from <code>park_tab</code>. Tabs created this way keep their label, because the tab-autoname plugin only renames tabs with numbered or auto-set labels.</p>
+    </section>
+
+    <section id="roles">
+      <h2>Roles</h2>
+      <p>Each pane gets one role. The first rule that matches wins:</p>
+      <div class="table"><table>
+        <thead><tr><th>Role</th><th>Matches</th></tr></thead>
+        <tbody>
+          <tr><td><code>agent</code></td><td>Herdr has detected an agent in the pane: Claude, opencode, Codex and so on.</td></tr>
+          <tr><td><code>logs</code></td><td>The pane's foreground command matches <code>kubectl logs</code>, <code>tail -f</code> or <code>journalctl</code>.</td></tr>
+          <tr><td><code>shell</code></td><td>Everything else.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Run <code>heelr current</code> to see what each pane was detected as.</p>
+      <div class="note">
+        <p><strong>Fixed layouts</strong> treat roles as preferences: matching panes are placed first, and if none match, any leftover pane fills the slot.</p>
+        <p><strong>Multi-tab layouts</strong> treat <code>gather</code> as strict: only panes with those roles go to that tab.</p>
+      </div>
+      <p>To change the rules, copy <code>roles.example.toml</code> from the repo to <code>~/.config/heelr/roles.toml</code> and edit it. A rule is one of:</p>
+<pre><code>[[roles]]
+<span class="k">name</span> = <span class="s">"agent"</span>
+<span class="k">agent</span> = true                    <span class="c"># Herdr detected an agent</span>
+
+[[roles]]
+<span class="k">name</span> = <span class="s">"k9s"</span>
+<span class="k">cmd</span> = <span class="s">'k9s'</span>                     <span class="c"># regex on the foreground command line</span>
+
+[[roles]]
+<span class="k">name</span> = <span class="s">"shell"</span>
+<span class="k">fallback</span> = true                 <span class="c"># always matches; keep it last</span></code></pre>
+    </section>
+
+    <section id="placement">
+      <h2>Placement</h2>
+      <p>Placement sends panes to the workspace and tab their repo and task belong to: one workspace per repo, one tab per task. <strong>It is off by default.</strong> Turn it on with <code>enabled = true</code> in <code>~/.config/heelr/placement.toml</code> (copy <code>examples/placement.toml</code>).</p>
+<pre><code>[placement]
+enabled = false
+workspace = "{repo}"        <span class="c"># one workspace per repo</span>
+tab = "{task}"              <span class="c"># one tab per task; tab = "{repo}" for one tab per repo</span>
+<span class="c"># ticket = 'GH-\d+'         # pull ticket ids out of worktree / branch names</span>
+create_workspaces = true
+<span class="c"># classify = "~/.config/heelr/classify.sh"   # stdin: pane facts JSON; stdout: {"role","repo","task"}</span>
+<span class="c"># burst_window = 0.75       # seconds, 0 to 5 (anything else: 0.75); new panes closer together than this are a burst</span>
+
+[placement.shape]
+default = "agents-logs"     <span class="c"># layout for each tab placement creates</span>
+<span class="c"># by_tab = { main = "main-left" }   # by the tab's task name</span></code></pre>
+      <ul>
+        <li>Templates may use only <code>{repo}</code> and <code>{task}</code>. Anything else, or an empty template, makes heelr fall back to the defaults. A pane's role never decides where it goes, so a role change is never drift.</li>
+        <li>Per repo, put a <code>.heelr.toml</code> in the repo root with <code>name = "..."</code> (the workspace name) and/or <code>ticket = '...'</code> (the ticket regex for that repo).</li>
+        <li>A wrongly typed value (for example <code>enabled = "yes"</code> or <code>create_workspaces = 1</code>) is treated as unset: placement stays off and workspaces are created, as by default. Only that field falls back; a wrongly typed <code>shape.by_tab</code>, template or number makes the whole file fall back to the defaults.</li>
+        <li>Trust: a repo's <code>.heelr.toml</code> is read from whatever folder a pane is in, so it can set the repo name and ticket pattern for that pane. Ticket patterns (here and in <code>placement.toml</code>) are accepted only if they are at most 200 characters, have at most two quantifiers (<code>?</code>, <code>*</code>, <code>+</code> and <code>{m,n}</code>), at most one <code>|</code> (not under a quantifier), no quantifier inside another, and no backreference, lookaround or conditional; anything else is ignored, because it can hang the hook on a crafted branch name, and logged once to <code>placement.log</code>. Each side of <code>A|B</code> counts its own quantifiers, so <code>[A-Z]+-\d+|GH-\d+</code> (three quantifiers) is ignored: write <code>[A-Z]+-\d+</code> instead. Only the first 120 characters of a name are searched.</li>
+      </ul>
+      <h3>Where a pane belongs</h3>
+      <p>The task comes from the first of these that has one: <code>heelr tag</code> (your own override); the adapter's report (it may supply a task, a worktree or a branch); the git worktree name; the git branch, unless it is the repo's default branch. A checkout inside a repo with none of those gets the task <code>main</code>. <code>unsorted</code> is only for panes outside any git repo or with no known folder. If a ticket regex is set (in <code>.heelr.toml</code> or <code>placement.toml</code>), the ticket id is pulled out of the name.</p>
+      <p>If another repo's task already uses a tab label in the workspace, heelr creates <code>&lt;task&gt; · &lt;repo&gt;</code> instead, and a pane in a tab with that qualified label counts as in place.</p>
+      <h3>New panes</h3>
+      <ul>
+        <li>A new pane is placed after a 0.75 s window (<code>burst_window</code>), so a restore that opens many panes is handled once.</li>
+        <li>A burst (<code>pane.created</code> events chained within 2 s of each other) moves panes without moving focus, and never moves the focused pane. A single new pane moves, and focus follows it only if it is the focused pane; a pane a script opened in the background is placed without taking focus.</li>
+        <li>A tab that placement creates gets its shape (<code>[placement.shape]</code>: <code>by_tab</code> for its task name, else <code>default</code>) recorded as its auto-tile layout, so with <code>auto_tile = true</code> it is laid out in that shape as panes arrive. A tab that already exists keeps the layout it has. The shape is applied by auto-tile, so it needs <code>auto_tile = true</code>.</li>
+        <li>The Herdr version check applies to background placement like any other command: on an untested Herdr it places nothing and logs once (run <code>heelr selftest --record</code> to mark the version tested).</li>
+        <li>If another heelr change holds the lock for over 5 s, the new pane is skipped quietly (a line in <code>placement.log</code>) and placed on the next event or by <code>heelr sort</code>.</li>
+        <li>If the last hook of a burst fails, the burst stays unplaced. Run <code>heelr sort</code>.</li>
+        <li>Panes in sleeping tabs, and panes in tabs with auto-tile switched off (<kbd>ctrl+b</kbd> <kbd>a</kbd>), are never placed, sorted, pulled or marked. If the only tab with the wanted label is asleep, the pane stays where it is.</li>
+        <li>Failures of background placement are written to <code>placement.log</code> in heelr's state folder and notified once. A failing <code>classify</code> script (cannot start, times out, too much output, bad output, non-zero exit) is logged there too, and notified at most once a minute, by the hook, <code>sort</code> and <code>pull</code>; refreshing the ↗ marks stays silent.</li>
+        <li>Moving a pane to another workspace gives it a new id. heelr keeps its stored facts and tag with it, also when you move or close panes by hand, and <code>heelr tag</code> / <code>heelr report</code> run from inside that pane (which still says its old id) follow it.</li>
+        <li>A repo is named after its main checkout's folder. A worktree of a bare repo is named after the bare folder (<code>project.git</code>), and a worktree of a submodule after the submodule; <code>.heelr.toml</code> is read from that folder.</li>
+      </ul>
+      <h3>Commands</h3>
+<pre><code>heelr sort [--workspace | --all] [-n]   <span class="c"># move drifted panes (default: the focused tab)</span>
+heelr pull TASK [-n]                    <span class="c"># gather one task's panes from every workspace into this one</span>
+heelr tag TASK [--pane ID]              <span class="c"># set a pane's task by hand; --clear removes it</span>
+heelr report [--pane ID]                <span class="c"># store facts about a pane (JSON on stdin; adapters call this)</span>
+heelr back [-n]                         <span class="c"># undo the last sort / pull</span>
+heelr drift-mark                        <span class="c"># refresh the ↗ marks now</span></code></pre>
+      <ul>
+        <li><code>sort</code> and <code>pull</code> work even when placement is off. <code>-n</code> previews.</li>
+        <li><code>back</code> after <code>sort</code> or <code>pull</code> works only in the workspace where you ran it. There is a single place-undo record: a later sort in another workspace replaces it. A partial sort or pull that stopped on an error can still be undone with <code>back</code>. If a source tab closed after being emptied, <code>back</code> recreates it. <code>back -n</code> lists what it would restore.</li>
+        <li>A bare <code>heelr tag</code> is an error (it does not clear); use <code>--clear</code>.</li>
+      </ul>
+      <h3>The ↗ marks</h3>
+      <p>With placement on, each tab that holds panes belonging somewhere else shows how many after its name: <code>herdr/heelr ↗2</code>. The mark goes once the tab is clean. The focused pane counts too, so a tab shows the same number wherever you are. <code>sort</code> never moves the focused pane, so after a plain <code>sort</code> the tab you are in can keep <code>↗1</code> for the pane you're in; <code>sort --all</code> from another tab moves it. A pane you <code>pull</code> into a tab counts too: <code>sort</code> would send it back to its repo's workspace.</p>
+      <ul>
+        <li>The marks update when a pane opens, closes or moves, after <code>sort</code>, <code>pull</code>, <code>back</code> and <code>tag</code>, and when a shell reports a new folder. A branch switch without a <code>cd</code> shows at the next of these, or run <code>heelr drift-mark</code>.</li>
+        <li>Every heelr label comparison ignores the mark: placement, sleep, layouts and the tab colours see <code>herdr/heelr</code>. A label you type that ends in <code> ↗</code> and a number is taken for a mark: heelr reads the name without it and replaces the number with its own count. tab-autoname leaves a marked tab alone, as it does a sleeping one, and names it again once the mark goes.</li>
+        <li>Refreshing is best effort and silent: it never notifies, never waits on a layout change, has a 5 s budget (classify scripts included; past it nothing is renamed) and renames a tab only when its count changes. A tab renamed while a refresh runs is left for the next one.</li>
+        <li>Turning placement off takes heelr's marks away at the next pane event (or run <code>heelr drift-mark</code>). It takes away only marks it remembers writing: a mark on a tab that came back with a new id (a Herdr restore while placement is off) stays. Rename that tab by hand, or turn placement on for a moment.</li>
+        <li>The park tab (<code>heelr-park</code>) is never marked: its panes are only there during an apply.</li>
+      </ul>
+      <h3>Adapters</h3>
+      <p>Adapters tell heelr what a pane is working on (<code>heelr report</code>).</p>
+      <ul>
+        <li>Shell: <code>heelr shell-hook bash|zsh|fish</code> prints a snippet that reports folder changes. In bash, put <code>command -v heelr &gt;/dev/null &amp;&amp; eval "$(heelr shell-hook bash)"</code> after any line that sets <code>PROMPT_COMMAND</code> (in <code>~/.bashrc</code>). In zsh, add <code>command -v heelr &gt;/dev/null &amp;&amp; eval "$(heelr shell-hook zsh)"</code> to <code>~/.zshrc</code>. In fish: <code>command -v heelr &gt;/dev/null; and heelr shell-hook fish | source</code>. The <code>command -v</code> guard keeps a shell that starts without heelr on its path quiet. The zsh and fish snippets are not yet tested on a real shell.</li>
+        <li><code>examples/adapters/</code>: <code>claude-hooks.json</code> (Claude Code <code>CwdChanged</code>; merge its <code>hooks</code> block into <code>settings.json</code>), <code>claude-statusline.md</code> (Claude Code status line), <code>codex-hooks.json</code> (Codex), <code>opencode-heelr.js</code> (opencode).</li>
+      </ul>
+    </section>
+
+    <section id="save-undo">
+      <h2>Saving &amp; undoing</h2>
+      <h3>Saving</h3>
+      <ul>
+        <li><code>heelr save &lt;name&gt;</code> writes the focused tab's shape to <code>~/.config/heelr/layouts/&lt;name&gt;.toml</code> as a fixed layout. Each slot is marked with its pane's role, and your focused pane's slot is <code>main</code>. Edit ratios and roles freely.</li>
+        <li><code>heelr save &lt;name&gt; --tabs</code> writes the whole workspace as a multi-tab layout: one entry per tab, gathering that tab's roles, capped at its current pane count, with its current shape inline. An existing <code>overflow</code> tab is left out, since unclaimed panes land there anyway.</li>
+        <li>Neither overwrites an existing file unless you add <code>--force</code>.</li>
+        <li><code>&lt;name&gt;</code> must be a plain file name: not empty, no <code>/</code> or <code>\</code>, not starting with <code>.</code>.</li>
+      </ul>
+      <h3>Undoing</h3>
+      <ul>
+        <li><code>back</code> undoes the <strong>last</strong> layout change in the workspace, single-tab or multi-tab. It goes one step back only; running it again redoes the change.</li>
+        <li>An apply that changed nothing doesn't replace the undo point.</li>
+        <li>Single-tab undo is kept per tab. It refuses if the tab has gained panes since, because it doesn't know where they go; apply a layout instead. A refused <code>back</code> changes nothing: it checks before closing any pane.</li>
+        <li>Panes the apply created (<code>add_missing</code>) are closed if the shell is at its prompt or still running only <code>new_pane_command</code>. If something else is running in the foreground, the pane is kept and moved to the <code>overflow</code> tab.</li>
+        <li>heelr can only see what runs in the foreground. A created shell back at its prompt is closed even if you've used it: its scrollback goes, and so do jobs you stopped with <code>ctrl+z</code> or started with <code>&amp;</code>. To keep a created pane you've used, don't undo that apply: apply another layout instead.</li>
+        <li>Multi-tab undo puts recorded panes back in their original tabs, recreating tabs that closed (they get new tab ids). A pane opened since in a tab being restored (including a created pane you've used) moves to the <code>overflow</code> tab; panes opened since elsewhere are left where they are.</li>
+        <li>Panes closed since are simply left out.</li>
+      </ul>
+      <h3>A safe way to experiment with a whole workspace</h3>
+<pre><code>heelr save before --tabs     <span class="c"># a snapshot you can always return to</span>
+heelr apply fleet -n         <span class="c"># preview</span>
+heelr apply fleet
+heelr apply before           <span class="c"># back to the snapshot, any time later</span></code></pre>
+    </section>
+
+    <section id="auto-tile">
+      <h2>Auto-tile</h2>
+      <p>With auto-tile on, a tab you've laid out with heelr keeps its layout as panes open and close, so a new pane slots into the stack instead of splitting whatever had focus.</p>
+      <ul>
+        <li><strong>A new pane</strong> joins the end of the stack. Main stays where it is.</li>
+        <li><strong>A closed pane</strong> leaves no gap. If main closes, the top of the stack becomes main.</li>
+        <li>The tab keeps its nudged size, and focus stays where Herdr put it.</li>
+        <li>It never opens a pane, and it saves no undo point: <kbd>ctrl+b</kbd> <kbd>u</kbd> still undoes your last deliberate change.</li>
+      </ul>
+      <p>It acts on a tab only when all of these hold:</p>
+      <ol>
+        <li><code>auto_tile = true</code> in <code>~/.config/heelr/config.toml</code> (off by default).</li>
+        <li>You applied a rule layout (a preset, or your own <code>kind = "rule"</code> file) to the tab, and haven't since undone it (<code>back</code>) or applied a multi-tab layout. Fixed layouts are left alone.</li>
+        <li>You haven't switched it off for the tab with <kbd>ctrl+b</kbd> <kbd>a</kbd>.</li>
+        <li>A pane opened in the tab, closed, or moved in or out. Moving panes around <em>within</em> the tab doesn't count.</li>
+        <li>No <code>heelr-park</code> tab is open in the workspace (it waits for <code>heelr back</code>).</li>
+      </ol>
+      <p><code>agents-logs</code> keeps its bands: a new pane goes wherever its role puts it, as <code>apply</code> would.</p>
+      <p><strong>Hand-made swaps.</strong> heelr remembers the order it laid the panes out in. If you swap panes by hand (not with <kbd>ctrl+b</kbd> <kbd>Enter</kbd>), the next pane that opens or closes puts them back in heelr's order. Use <kbd>ctrl+b</kbd> <kbd>Enter</kbd>, or apply the layout again, to make a new order stick.</p>
+      <p><strong>Tabs laid out before auto-tile existed</strong> have no remembered order: apply a layout once.</p>
+      <p>It runs from <a href="#plugin">the heelr plugin</a>. Problems go to <code>~/.local/state/heelr/auto.log</code>. A new error also shows a notification; the same error again doesn't, so a lasting problem doesn't notify on every pane event. Once auto-tile works again it logs <code>ok: auto-tile working again</code>, and the next error notifies again.</p>
+    </section>
+
+    <section id="files">
+      <h2>Files &amp; config</h2>
+      <div class="table"><table>
+        <thead><tr><th>Path</th><th>What it is</th></tr></thead>
+        <tbody>
+          <tr><td><code>~/.config/heelr/layouts/*.toml</code></td><td>Your layouts.</td></tr>
+          <tr><td><code>~/.config/heelr/roles.toml</code></td><td>Optional role rules.</td></tr>
+          <tr><td><code>~/.config/heelr/config.toml</code></td><td>Optional. <code>favourites = ["main-left", "grid", ...]</code> sets the menu's number keys. <code>auto_tile = true</code> turns on <a href="#auto-tile">auto-tile</a>.</td></tr>
+          <tr><td><code>~/.config/heelr/tested-versions</code></td><td>Herdr versions you've tested with <code>heelr selftest --record</code>, one per line. Shipped ones are in <code>heelr/tested_versions.txt</code>.</td></tr>
+          <tr><td><code>~/.local/state/heelr/</code></td><td>Undo records, the apply lock, <code>tabs/</code> (each tab's last layout, nudged sizes, pane order and auto-tile switch), <code>pick.log</code> (one line per menu choice) and <code>auto.log</code> (auto-tile problems, kept under 64 KB). Safe to delete; you lose undo, nudged sizes and auto-tile's memory of each tab (apply again).</td></tr>
+          <tr><td><code>~/.config/herdr/config.toml</code></td><td>The menu, undo, promote, nudge and auto-tile key bindings (search for <code>heelr</code>).</td></tr>
+          <tr><td>Your heelr checkout</td><td>The code, a git clone. <code>~/.local/bin/heelr</code> is a symlink to its <code>bin/heelr</code>.</td></tr>
+        </tbody>
+      </table></div>
+      <p>The menu lists favourites first, marked ★, in the order you give, then every other layout alphabetically. The default favourites are <code>main-left</code>, <code>grid</code>, <code>main-top</code>, <code>even-columns</code> and <code>even-rows</code>.</p>
+      <p>Each layout shows as a box-drawing thumbnail with its key underneath, in one row that scrolls sideways (◀ / ▶ mark more off screen); the highlighted one is underlined and named in full at the top right. The shaded pane is the main one. Rule layouts are drawn with 3–5 sample panes, and multi-tab layouts show their tab count. The menu uses the largest thumbnails that fit, and falls back to a plain list (with a <code>&gt;</code> on the highlighted line) if not even two fit. The popup size is the <code>width</code> / <code>height</code> of the <code>prefix+m</code> binding; 96 × 16 shows four or five cards.</p>
+      <p>Layout keys are <kbd>1</kbd>–<kbd>9</kbd>, then letters, skipping <kbd>b</kbd>, <kbd>h</kbd>, <kbd>l</kbd> and <kbd>q</kbd> (the menu's own keys).</p>
+<pre><code>[[keys.command]]
+key = "prefix+m"
+type = "popup"
+command = "heelr pick"
+width = 96
+height = 16
+
+[[keys.command]]
+key = "prefix+u"
+type = "shell"
+command = "heelr back"
+
+[[keys.command]]
+key = "prefix+enter"
+type = "shell"
+command = "heelr promote"
+
+[[keys.command]]
+key = "prefix+="
+type = "shell"
+command = "heelr nudge +"
+
+[[keys.command]]
+key = "prefix+-"
+type = "shell"
+command = "heelr nudge -"
+
+[[keys.command]]
+key = "prefix+a"
+type = "shell"
+command = "heelr auto-toggle"</code></pre>
+    </section>
+
+    <section id="trouble">
+      <h2>Troubleshooting</h2>
+      <div class="table"><table>
+        <thead><tr><th>You see</th><th>What to do</th></tr></thead>
+        <tbody>
+          <tr><td><code>refused: layout has N slots but the tab has M panes</code></td><td>A fixed layout set to <code>refuse</code>. Use a rule layout, or set <code>on_mismatch = "fill"</code>.</td></tr>
+          <tr><td><code>tab … has a zoomed pane</code></td><td>Unzoom the pane with Herdr's zoom key, then retry.</td></tr>
+          <tr><td><code>Herdr X is untested</code></td><td>See <a href="#upgrade">After a Herdr upgrade</a>.</td></tr>
+          <tr><td><code>warning: Herdr X is an untested patch release; proceeding</code></td><td>heelr ran anyway (same major.minor as a tested version). <code>heelr selftest --record</code> silences it.</td></tr>
+          <tr><td><code>another layout change is running</code></td><td>Another heelr change, auto-tile or layout plugin held on for over 2 seconds. Retry.</td></tr>
+          <tr><td><code>no heelr layout recorded for this tab; apply a layout first</code></td><td>Nudge works on the layout heelr last applied to the tab. After <code>back</code> or a multi-tab layout there isn't one. Apply one from the menu, then nudge.</td></tr>
+          <tr><td><code>… has no main area to resize</code></td><td>Nudge on <code>grid</code> or <code>even-*</code>: there's no main area. Apply a <code>main-*</code> layout instead.</td></tr>
+          <tr><td><code>main area already at the limit</code></td><td>Nudge stops at 20% and 80%.</td></tr>
+          <tr><td>Auto-tile does nothing</td><td>Check, in order: <code>auto_tile = true</code> in <code>~/.config/heelr/config.toml</code>; the heelr plugin is linked and up to date (<code>herdr plugin list</code>; re-link after updating heelr); the tab has a layout you applied since auto-tile existed; <kbd>ctrl+b</kbd> <kbd>a</kbd> hasn't switched it off (it says which); no <code>heelr-park</code> tab is open. <code>~/.local/state/heelr/auto.log</code> says why it skipped or failed.</td></tr>
+          <tr><td>Auto-tile put back panes I'd swapped by hand</td><td>It keeps heelr's order. Swap with <kbd>ctrl+b</kbd> <kbd>Enter</kbd>, or apply the layout again, and the new order sticks.</td></tr>
+          <tr><td><code>busy: another heelr change ran for over 5s</code> in <code>auto.log</code></td><td>A pane opened during a long apply. Open or close a pane, or apply again, to re-tile.</td></tr>
+          <tr><td><code>no layout named …</code></td><td>Check <code>heelr list</code>. The file must be <code>~/.config/heelr/layouts/&lt;name&gt;.toml</code>.</td></tr>
+          <tr><td><code>INVALID: …</code> in <code>heelr list</code></td><td>The file has a mistake; the message says what.</td></tr>
+          <tr><td><code>layout differs from target after apply</code></td><td>The panes moved, but some sizes or splits didn't come out as asked; the message lists which. Run <code>heelr current</code> to see the result, and try less extreme ratios.</td></tr>
+          <tr><td>A <code>heelr-park</code> tab stays open, and apply says "Run <code>heelr back</code> first"</td><td>An apply stopped partway. Run <code>heelr back</code>. If back can't restore it (it says so), move the panes in <code>heelr-park</code> back by hand, or close the <code>heelr-park</code> tab if it's empty, then apply again.</td></tr>
+          <tr><td><code>stopped after k/n steps</code></td><td>Something changed underneath, such as a pane closing mid-apply. Nothing was closed; <code>heelr back</code> restores.</td></tr>
+          <tr><td>The menu doesn't open</td><td>Run <code>herdr config check</code>, then <code>herdr server reload-config</code>.</td></tr>
+          <tr><td>A pick in the menu seems to do nothing</td><td>Usually the tab already has that layout; the menu says so. To see what each key press did, read <code>~/.local/state/heelr/pick.log</code>.</td></tr>
+          <tr><td><code>note: all N panes are 'agent', so … is a plain grid here</code></td><td>A role layout (<code>agents-logs</code>) without <code>add_missing</code>: one band is empty. Turn on <code>add_missing = true</code>, or add a log or shell pane.</td></tr>
+          <tr><td><code>note: none of the N panes is 'agent', so … is a plain grid here</code></td><td><code>agents-logs</code> on a tab with no agent. Start an agent in one of the panes, then apply again.</td></tr>
+          <tr><td>The sidebar collapsed to a column of numbers</td><td>That's Herdr's <kbd>ctrl+b</kbd> <kbd>b</kbd> (sidebar toggle), easy to hit when reaching for undo. Press it again. Undo is <kbd>ctrl+b</kbd> <kbd>u</kbd>.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="upgrade">
+      <h2>After a Herdr upgrade</h2>
+      <p>heelr depends on details of Herdr's behaviour, so it checks the server's version before changing anything:</p>
+      <ul>
+        <li>a <strong>tested</strong> version runs;</li>
+        <li>any untested <strong>patch release</strong> of a tested major.minor, older or newer (0.9.2 or 0.9.4 when 0.9.3 is tested), runs, with a one-line warning;</li>
+        <li>a new <strong>minor or major</strong> version (0.10.0, 1.0.0), or a version string heelr can't read (such as <code>0.10.0-rc1</code>), is refused until you test it. <code>heelr --allow-untested …</code> runs anyway.</li>
+      </ul>
+      <p>To test a version, run:</p>
+<pre><code>heelr selftest --record</code></pre>
+      <p>This starts a throwaway Herdr server (its own <code>HOME</code> under <code>/run/user/$UID</code> if that directory exists, otherwise under <code>$TMPDIR</code>, or <code>/tmp</code>; the path must be short enough for a unix socket, none of your Herdr environment), checks that the server answering is that fresh one (its socket inside the throwaway <code>HOME</code>, no workspaces or panes) before any test runs, runs the live tests there, then stops it, kills anything still running from its <code>HOME</code>, and deletes the <code>HOME</code>, also on Ctrl-C. Your running Herdr and its panes are never touched, so it's safe to run from inside Herdr, and before restarting into a new binary. The live tests apply every preset, a multi-tab gather and <code>back</code>, and check that no pane or process changed.</p>
+      <ul>
+        <li><code>--bin PATH</code> tests that binary. Default: <code>$HERDR_BIN_PATH</code>, else the <code>herdr.bin</code> next to the <code>herdr</code> on your <code>PATH</code>, else that <code>herdr</code>.</li>
+        <li><code>--record</code> adds the version to <code>~/.config/heelr/tested-versions</code> when the tests pass. A failing or skipped run records nothing.</li>
+        <li>Exit code: 0 pass, 1 fail or error, 130 interrupted.</li>
+      </ul>
+      <p>A version listed in either file is accepted exactly as written, even a pre-release such as <code>0.10.0-rc1</code>: listing it is your explicit statement that you tested it.</p>
+      <p>The tested list is plain text, one version per line: the versions shipped with heelr are in <code>heelr/tested_versions.txt</code>, yours in <code>~/.config/heelr/tested-versions</code>. To ship a version you've recorded, move it into <code>heelr/tested_versions.txt</code> and commit. The offline tests are <code>python3 -m pytest</code> from your heelr checkout.</p>
+      <p>Internals: selftest lets its own child processes run on the version under test by setting <code>_HEELR_SELFTEST_ALLOW_VERSION</code> in their environment. It is not a user setting and may change; to run on an untested version, use <code>heelr --allow-untested</code>.</p>
+      <h3>Checking for a new Herdr</h3>
+<pre><code>heelr check-update</code></pre>
+      <p>Reads <code>https://herdr.dev/latest.json</code> and compares it with the installed binary (<code>herdr.bin --version</code>) and the running server (<code>herdr.bin status --json</code>, which still answers after an upgrade that changed Herdr's protocol; <code>herdr api snapshot</code> if it can't; both read-only). It changes nothing: it doesn't install, restart, or turn on Herdr's own <code>version_check</code>.</p>
+      <div class="table"><table>
+        <thead><tr><th>Exit</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>0</code></td><td>Up to date.</td></tr>
+          <tr><td><code>10</code></td><td>A newer Herdr is out. The output says whether heelr already accepts it, would warn, or would refuse until <code>heelr selftest --record</code> passes.</td></tr>
+          <tr><td><code>11</code></td><td>The server is running an older version than the installed binary, or Herdr itself reports the server's binary changed since it started: restart Herdr to pick up the update.</td></tr>
+          <tr><td><code>1</code></td><td>Error, such as no network, or the binary or server doesn't answer within 10 seconds.</td></tr>
+        </tbody>
+      </table></div>
+      <p>If an update is out and a restart is pending too, the exit is 10 and both are printed. <code>--bin PATH</code> checks a different binary.</p>
+      <footer>Tested on Herdr 0.9.1 and 0.9.3. Source of truth: <code>docs/USER_GUIDE.md</code> in the heelr repo.</footer>
+    </section>
+    <section id="plugin">
+      <h2>The heelr plugin: tab colours and auto-tile</h2>
+      <p><code>plugins/tab-colours/</code> is heelr's Herdr plugin (its id is <code>heelr.tab-colours</code>, its name "heelr"). It does two things, each from its own hooks, so a problem in one can't hold up the other:</p>
+      <ul>
+        <li><strong>Auto-tile:</strong> on <code>pane.created</code>, <code>pane.closed</code> and <code>pane.moved</code> it runs <code>heelr auto</code> from the same checkout (<code>../../bin/heelr</code>, so the plugin and heelr are always the same version). That does nothing unless <code>auto_tile = true</code>; see <a href="#auto-tile">Auto-tile</a>.</li>
+        <li><strong>Tab colours</strong>, below.</li>
+      </ul>
+      <p>Herdr copies a plugin's hooks when you link it, so after updating heelr, link it again: <code>herdr plugin link &lt;checkout&gt;/plugins/tab-colours</code> updates the existing plugin in place (same id, so your colours and pins are kept).</p>
+      <h3 id="tab-colours">Tab colours</h3>
+      <p>The plugin gives every tab a stable, distinct colour in the sidebar's agent list, with no per-tab config. Herdr can't colour a row or compute a colour, so the plugin gives each tab a colour slot and reports one pane token per pane, <code>$tabc&lt;slot&gt;</code>, whose value is the tab's name. The sidebar lists all slot tokens, each with a fixed colour; only the reported one shows, so each agent row shows its tab name once, in its tab's colour.</p>
+      <ul>
+        <li><strong>Stable:</strong> a tab keeps its slot for as long as it exists (renames, restarts and live handoffs included); the slot table is in the plugin's state dir. A tab that comes back under a new id gets its old slot back by name.</li>
+        <li><strong>Distinct:</strong> a new tab takes the least-used slot, lowest first, so the first seven tabs get gruvbox's seven bright accents. Ten slots; past ten, colours repeat.</li>
+        <li><strong>Pins:</strong> <code>[pins]</code> in the plugin's <code>config.toml</code> gives tabs whose name starts with a prefix a fixed colour. Automatic slots avoid pinned colours while others are free.</li>
+        <li><strong>Updates:</strong> runs on Herdr start and live handoff (pane tokens don't survive a handoff; the plugin re-reports them) and on <code>tab.created</code>, <code>tab.renamed</code>, <code>tab.closed</code>, <code>pane.created</code> and <code>pane.moved</code>, so heelr's pane moves recolour too.</li>
+      </ul>
+      <p>Install (Herdr 0.9.3+):</p>
+<pre><code>cd ~/src/heelr/plugins/tab-colours
+herdr plugin link "$PWD"
+cp config.example.toml "$(herdr plugin config-dir heelr.tab-colours)/config.toml"   # optional pins
+python3 tab_colours.py sidebar     # prints the [ui.sidebar.agents] rows for your pins</code></pre>
+      <p>Replace the <code>[ui.sidebar.agents]</code> block in <code>~/.config/herdr/config.toml</code> with that output (<code>sidebar.example.toml</code> is the output for the example pins), then <code>herdr server reload-config</code>. Colours appear on the next tab or pane event; to apply them at once, run <code>python3 tab_colours.py</code> (it uses the same state and config dirs as the plugin). Change pins → re-run <code>sidebar</code> and replace the rows again. Remove: <code>herdr plugin unlink heelr.tab-colours</code> and restore your rows.</p>
+    </section>
+  </main>
+</div>

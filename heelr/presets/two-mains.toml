@@ -1,0 +1,9 @@
+name = "two-mains"
+kind = "rule"
+rule = "two-mains"
+main_ratio = 0.65
+# With fewer than 3 panes, open new shells until there are two mains and
+# one below.
+# `back` closes new panes again unless you've started using them.
+add_missing = true
+# new_pane_command = "htop"   # run this in each new pane (default: plain shell)

@@ -1,0 +1,8 @@
+name = "main-center"
+kind = "rule"
+rule = "main-center"
+main_ratio = 0.5
+# On a one-pane tab, open a new shell beside the main pane.
+# `back` closes new panes again unless you've started using them.
+add_missing = true
+# new_pane_command = "htop"   # run this in each new pane (default: plain shell)

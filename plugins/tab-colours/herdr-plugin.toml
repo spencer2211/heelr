@@ -1,0 +1,49 @@
+id = "heelr.tab-colours"
+name = "heelr"
+version = "0.4.0"
+min_herdr_version = "0.9.3"
+description = "heelr: a stable, distinct sidebar colour per tab ($tabc<slot> pane tokens), and auto-tile"
+platforms = ["linux", "macos"]
+
+# The id stays "heelr.tab-colours": Herdr keys this plugin's state and config dirs by it, and
+# they hold the colour slot memory and pins.
+#
+# Tab colours: each run reconciles the whole session from `herdr api snapshot`, so every hook
+# runs the same command. These are the events that change a pane's tab or a tab's label.
+[[startup]]
+command = ["python3", "tab_colours.py"]
+
+[[events]]
+on = "tab.created"
+command = ["python3", "tab_colours.py"]
+
+[[events]]
+on = "tab.renamed"
+command = ["python3", "tab_colours.py"]
+
+[[events]]
+on = "tab.closed"
+command = ["python3", "tab_colours.py"]
+
+[[events]]
+on = "pane.created"
+command = ["python3", "tab_colours.py"]
+
+[[events]]
+on = "pane.moved"
+command = ["python3", "tab_colours.py"]
+
+# Auto-tile: heelr in this checkout (hooks run in the plugin root). It does nothing unless
+# auto_tile = true in heelr's config; each entry is its own process, so it can't hold up colours.
+[[events]]
+on = "pane.created"
+command = ["../../bin/heelr", "auto"]
+
+[[events]]
+on = "pane.closed"
+command = ["../../bin/heelr", "auto"]
+
+[[events]]
+on = "pane.moved"
+command = ["../../bin/heelr", "auto"]
+

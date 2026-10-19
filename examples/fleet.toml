@@ -1,0 +1,20 @@
+# Multi-tab example. Copy to ~/.config/heelr/layouts/ to use it.
+# Every pane in the workspace is placed: claimed by the first [[tabs]] entry
+# whose `gather` matches its role (up to `max`), else moved to `park_tab`.
+name = "fleet"
+kind = "multi"
+park_tab = "overflow"
+
+[[tabs]]
+label = "agents"
+gather = ["agent"]
+layout = "grid"                 # any layout name, or an inline table
+
+[[tabs]]
+label = "ops"
+gather = ["logs", "shell"]
+max = 3
+  [tabs.layout]
+  kind = "rule"
+  rule = "main-top"
+  main_ratio = 0.5

@@ -1,0 +1,5 @@
+{
+  "hooks": {
+    "SessionStart": [{"hooks": [{"type": "command", "command": "[ -n \"$HERDR_PANE_ID\" ] && heelr report || true"}]}]
+  }
+}

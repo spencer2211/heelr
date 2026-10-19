@@ -1,0 +1,7 @@
+__pycache__/
+.pytest_cache/
+.worktrees/
+.claude/worktrees/
+tasks.md
+docs/research/
+.privacy-deny

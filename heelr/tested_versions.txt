@@ -1,0 +1,5 @@
+# Herdr versions heelr has passed its live tests on (tests/test_live.py).
+# One per line. `heelr selftest --record` adds to ~/.config/heelr/tested-versions
+# instead of this file; move a version here when committing it to the repo.
+0.9.1
+0.9.3

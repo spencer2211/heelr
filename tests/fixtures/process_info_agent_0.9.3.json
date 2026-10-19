@@ -1,0 +1,63 @@
+{
+ "id": "cli:pane:process_info",
+ "result": {
+  "process_info": {
+   "foreground_process_group_id": 3763098,
+   "foreground_processes": [
+    {
+     "argv": [
+      "claude",
+      "--resume",
+      "00000000-0000-4000-8000-000000000000"
+     ],
+     "cmdline": "claude --resume 00000000-0000-4000-8000-000000000000",
+     "cwd": "/home/user/project",
+     "name": "claude",
+     "pid": 3763098
+    },
+    {
+     "argv": [
+      "/opt/tools/bin/python",
+      "/opt/tools/bin/mcp-server-fetch"
+     ],
+     "cmdline": "/opt/tools/bin/python /opt/tools/bin/mcp-server-fetch",
+     "cwd": "/home/user/project",
+     "name": "mcp-server-fetc",
+     "pid": 3763745
+    },
+    {
+     "argv": [
+      "node",
+      "/opt/tools/mcp/a/index.js"
+     ],
+     "cmdline": "node /opt/tools/mcp/a/index.js",
+     "cwd": "/home/user/project",
+     "name": "node",
+     "pid": 3763757
+    },
+    {
+     "argv": [
+      "node",
+      "/opt/tools/mcp/b/index.js"
+     ],
+     "cmdline": "node /opt/tools/mcp/b/index.js",
+     "cwd": "/home/user/project",
+     "name": "node",
+     "pid": 3763762
+    },
+    {
+     "argv": [
+      "node",
+      "/opt/tools/mcp/c/index.js"
+     ],
+     "cmdline": "node /opt/tools/mcp/c/index.js",
+     "cwd": "/home/user/project",
+     "name": "node",
+     "pid": 3763792
+    }
+   ],
+   "pane_id": "wA:p1",
+   "shell_pid": 3760834
+  }
+ }
+}

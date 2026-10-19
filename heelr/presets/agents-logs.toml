@@ -1,0 +1,12 @@
+name = "agents-logs"
+kind = "rule"
+rule = "agents-logs"
+main_ratio = 0.7
+# Panes whose role is main_role (default "agent") go in a grid on top;
+# everything else (logs, shells) in a row along the bottom.
+# main_role = "agent"
+# If every pane is an agent, open a new shell for the bottom row. `back`
+# closes it again unless you've started using it. With no agent at all the
+# tab is a plain grid (a new shell couldn't fill the agent band).
+add_missing = true
+# new_pane_command = "kubectl logs -f deploy/my-app"

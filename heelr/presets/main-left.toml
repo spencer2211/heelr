@@ -1,0 +1,8 @@
+name = "main-left"
+kind = "rule"
+rule = "main-left"
+main_ratio = 0.6
+# On a one-pane tab, open a new shell beside the main pane.
+# `back` closes new panes again unless you've started using them.
+add_missing = true
+# new_pane_command = "htop"   # run this in each new pane (default: plain shell)
