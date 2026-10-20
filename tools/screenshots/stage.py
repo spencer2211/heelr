@@ -14,6 +14,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -65,12 +66,19 @@ class Stage:
 
     # ---------------------------------------------------------------- lifecycle
     def __enter__(self):
+        try:
+            return self._setup()
+        except BaseException:
+            self.close()
+            raise
+
+    def _setup(self):
         if Path(f"/tmp/.X11-unix/X{DISPLAY[1:]}").exists():
             raise SystemExit(f"display {DISPLAY} is already in use; refusing to share it")
         self.binary = selftest.resolve_bin(None)
         version = selftest.binary_version(self.binary)
         self.home = selftest.make_home()
-        self.tmp = Path(selftest.tempfile.mkdtemp(prefix="hs-", dir=selftest._base_dir()))
+        self.tmp = Path(tempfile.mkdtemp(prefix="hs-", dir=selftest._base_dir()))
         self.env = selftest.child_env(self.home, self.binary, version)
         self.home_real = os.path.expanduser("~")
         stub = self.tmp / "bin"

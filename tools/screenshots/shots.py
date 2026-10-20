@@ -52,7 +52,7 @@ auto_switch = false
 [[keys.command]]
 key = "prefix+m"
 type = "popup"
-command = "heelr pick"
+command = "printf '\\\\033[?25l'; heelr pick"
 width = 96
 height = 16
 """
@@ -101,7 +101,7 @@ def demo_repos(home: Path) -> dict[str, Path]:
 class Scene:
     """A staged Herdr session: helpers to build workspaces, tabs and panes."""
 
-    def __init__(self, st: Stage, size=(1400, 800)):
+    def __init__(self, st: Stage):
         self.st = st
         self.folders = demo_repos(st.home)
         (st.home / ".sudo_as_admin_successful").write_text("")
@@ -201,7 +201,7 @@ def full(out: Path, keep: bool, **imgs):
             pnglib.write_png(img, str(out / "full" / f"{name}.png"))
 
 
-def save(out: Path, name: str, img, full=None):
+def save(out: Path, name: str, img):
     pnglib.write_png(img, str(out / name))
     print(f"  {name}: {img[0]}x{img[1]}, {(out / name).stat().st_size // 1024} KB")
 
@@ -227,7 +227,7 @@ def start_work(sc: Scene, p: dict[str, str]):
     sc.run(p["shell"], "clear; ls")
     sc.agent(p["agent1"], "refresh auth tokens")
     sc.agent(p["agent2"], "add token tests")
-    sc.run(p["logs"], f"clear; tail -f ~/logs/api.log")
+    sc.run(p["logs"], "clear; tail -f ~/logs/api.log")
     sleep(2)
 
 
