@@ -30,15 +30,22 @@ STUB_CLAUDE = r"""#!/bin/bash
 title=${STUB_TITLE:-$1}
 printf '\033]0;%s\007' "✳ $title"
 tilde='~'
-printf ' \033[38;5;208m✻\033[0m Claude Code \033[2m(demo)\033[0m\n \033[2m%s\033[0m\n' "${PWD/#$HOME/$tilde}"
 rule=$(printf '─%.0s' $(seq 20))
-printf ' %s\n > \n %s\n' "$rule" "$rule"
+SCREEN=$(printf ' \033[38;5;208m✻\033[0m Claude Code \033[2m(demo)\033[0m\n \033[2m%s\033[0m\n %s\n > \n %s\n' \
+  "${PWD/#$HOME/$tilde}" "$rule" "$rule")
+export SCREEN
+printf '%s\n' "$SCREEN"
 if [ "$1" = --resume ]; then   # what Claude's SessionStart hook reports (heelr sleep needs it)
   "${HERDR_BIN_PATH:-herdr}" pane report-agent-session "$HERDR_PANE_ID" --source herdr:claude --agent claude \
     --agent-session-id "$2" >/dev/null 2>&1
 fi
 printf '\033[?25l'   # no cursor under the prompt box
-exec -a claude python3 -c 'import signal, time; signal.signal(signal.SIGCHLD, signal.SIG_IGN); time.sleep(1e9)' "$@"
+# redraw the whole screen on resize (heelr apply resizes panes)
+exec -a claude python3 -c 'import os, signal, sys, time
+def redraw(*_):
+    sys.stdout.write("\033[?25l\033[H\033[2J" + os.environ["SCREEN"]); sys.stdout.flush()
+signal.signal(signal.SIGWINCH, redraw); signal.signal(signal.SIGCHLD, signal.SIG_IGN)
+while True: time.sleep(1e9)' "$@"
 """
 
 
