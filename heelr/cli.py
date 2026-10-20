@@ -991,6 +991,17 @@ def _carousel(order: list[str], keys: str, favs: set[str], sel: int, cols: int, 
 
 def cmd_pick(args) -> int:
     """Layout menu for a Herdr popup keybinding: arrows and Enter, or a layout's key."""
+    tty = sys.stdout.isatty()
+    if tty:
+        print("\033[?25l", end="", flush=True)  # no cursor block under the help line
+    try:
+        return _pick_menu(args, tty)
+    finally:
+        if tty:
+            print("\033[?25h", end="", flush=True)
+
+
+def _pick_menu(args, tty: bool) -> int:
     import shutil
     names = sorted(discover())
     favs = [n for n in favourites() if n in names]
@@ -998,7 +1009,6 @@ def cmd_pick(args) -> int:
     keys = MENU_KEYS[: len(order)]
     last = core.tab_record(args.tab).get("layout") if args.tab else None
     sel = order.index(last) if last in order else 0
-    tty = sys.stdout.isatty()
     while True:
         cols, rows = shutil.get_terminal_size((96, 16))
         if tty:

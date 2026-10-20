@@ -208,6 +208,53 @@ def test_wrap_never_breaks_between_the_key_and_the_name():
     assert cli._wrap("a averyveryverylongnamewithnohyphens", 20)[0].startswith("a a")
 
 
+HIDE, SHOW = "\033[?25l", "\033[?25h"
+
+
+def _tty(monkeypatch, on=True):
+    monkeypatch.setattr(cli.sys.stdout, "isatty", lambda: on)
+
+
+def test_pick_hides_the_cursor_and_restores_it_on_cancel(fake, monkeypatch, capsys):
+    tab, _ = fake.add_tab("w1", "main", 3)
+    _tty(monkeypatch)
+    _press(monkeypatch, "q")
+    assert heelr("pick", "--tab", tab) == 0
+    out = capsys.readouterr().out
+    assert HIDE in out and out.endswith(SHOW) and out.rindex(SHOW) > out.rindex(HIDE)
+
+
+def test_pick_restores_the_cursor_after_an_apply(fake, monkeypatch, capsys):
+    tab, _ = fake.add_tab("w1", "main", 3)
+    _tty(monkeypatch)
+    _press(monkeypatch, "\r")
+    assert heelr("pick", "--tab", tab) == 0
+    out = capsys.readouterr().out
+    assert HIDE in out and out.rindex(SHOW) > out.rindex(HIDE)
+
+
+def test_pick_leaves_the_cursor_alone_when_not_a_tty(fake, monkeypatch, capsys):
+    tab, _ = fake.add_tab("w1", "main", 3)
+    _tty(monkeypatch, False)
+    _press(monkeypatch, "q")
+    assert heelr("pick", "--tab", tab) == 0
+    out = capsys.readouterr().out
+    assert HIDE not in out and SHOW not in out
+
+
+def test_pick_restores_the_cursor_when_the_key_reader_raises(fake, monkeypatch, capsys):
+    tab, _ = fake.add_tab("w1", "main", 3)
+    _tty(monkeypatch)
+
+    def boom():
+        raise KeyboardInterrupt
+    monkeypatch.setattr(cli, "_getkey", boom)
+    with pytest.raises(KeyboardInterrupt):
+        heelr("pick", "--tab", tab)
+    out = capsys.readouterr().out
+    assert HIDE in out and out.rindex(SHOW) > out.rindex(HIDE)
+
+
 def test_layouts_past_the_last_menu_key_are_still_reachable(fake, monkeypatch, tmp_path):
     user = tmp_path / "config" / "heelr" / "layouts"
     user.mkdir(parents=True)
