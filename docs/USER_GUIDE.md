@@ -591,7 +591,8 @@ underlined and named in full at the top right. Rule layouts are drawn with 3–5
 sample panes; multi-tab layouts show their tab count. The menu uses the
 largest thumbnails that fit, and falls back to a plain list (with a `>` on the
 highlighted line) if not even two fit. The popup size is the `width` /
-`height` of the `prefix+m` binding; 96 × 16 shows four or five cards.
+`height` of the `prefix+m` binding. `width` takes columns or a percentage of
+the window: `"80%"` shows most cards on a wide window, while `96` shows four or five.
 
 Layout keys are `1`–`9`, then letters, skipping `b`, `h`, `l` and `q` (the menu's own
 keys).
@@ -603,7 +604,7 @@ The bindings, for reference:
 key = "prefix+m"
 type = "popup"
 command = "heelr pick"
-width = 96
+width = "80%"
 height = 16
 
 [[keys.command]]

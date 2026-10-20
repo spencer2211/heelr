@@ -126,7 +126,7 @@ The bindings:
 key = "prefix+m"
 type = "popup"
 command = "heelr pick"
-width = 96
+width = "80%"
 height = 16
 
 [[keys.command]]

@@ -549,13 +549,13 @@ heelr apply before           <span class="c"># back to the snapshot, any time la
         </tbody>
       </table></div>
       <p>The menu lists favourites first, marked ★, in the order you give, then every other layout alphabetically. The default favourites are <code>main-left</code>, <code>grid</code>, <code>main-top</code>, <code>even-columns</code> and <code>even-rows</code>.</p>
-      <p>Each layout shows as a box-drawing thumbnail with its key underneath, in one row that scrolls sideways (◀ / ▶ mark more off screen); the highlighted one is underlined and named in full at the top right. The shaded pane is the main one. Rule layouts are drawn with 3–5 sample panes, and multi-tab layouts show their tab count. The menu uses the largest thumbnails that fit, and falls back to a plain list (with a <code>&gt;</code> on the highlighted line) if not even two fit. The popup size is the <code>width</code> / <code>height</code> of the <code>prefix+m</code> binding; 96 × 16 shows four or five cards.</p>
+      <p>Each layout shows as a box-drawing thumbnail with its key underneath, in one row that scrolls sideways (◀ / ▶ mark more off screen); the highlighted one is underlined and named in full at the top right. The shaded pane is the main one. Rule layouts are drawn with 3–5 sample panes, and multi-tab layouts show their tab count. The menu uses the largest thumbnails that fit, and falls back to a plain list (with a <code>&gt;</code> on the highlighted line) if not even two fit. The popup size is the <code>width</code> / <code>height</code> of the <code>prefix+m</code> binding. <code>width</code> takes columns or a percentage of the window: <code>"80%"</code> shows most cards on a wide window, while <code>96</code> shows four or five.</p>
       <p>Layout keys are <kbd>1</kbd>–<kbd>9</kbd>, then letters, skipping <kbd>b</kbd>, <kbd>h</kbd>, <kbd>l</kbd> and <kbd>q</kbd> (the menu's own keys).</p>
 <pre><code>[[keys.command]]
 key = "prefix+m"
 type = "popup"
 command = "heelr pick"
-width = 96
+width = "80%"
 height = 16
 
 [[keys.command]]
