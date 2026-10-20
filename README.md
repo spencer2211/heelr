@@ -5,6 +5,8 @@ tab for their repo and task (off by default). Layouts come second: heelr rearran
 you already have (no restarts) into a saved or preset shape.
 **Start with the [user guide](docs/USER_GUIDE.md).**
 
+![The heelr layout carousel, open as a popup over a Herdr tab](docs/images/hero.png)
+
 ```
 heelr list                   # presets + ~/.config/heelr/layouts/*.toml
 heelr show grid -n 5         # draw a layout
@@ -26,6 +28,71 @@ heelr sort | pull TASK       # placement: move panes to their repo's workspace a
 ```
 
 `--tab <id>` targets a tab other than the focused one.
+
+## Features
+
+<table>
+<tr>
+<td valign="top" width="36%">
+
+#### Role placement
+
+Agents' panes move to the workspace and tab for their repo and task.
+
+`heelr sort`, `heelr pull TASK`
+
+</td>
+<td><img src="docs/images/placement.png" alt="A tab mixing three agents and a shell, then the same panes sorted into one workspace per repo and one tab per task" width="520"></td>
+</tr>
+<tr>
+<td><img src="docs/images/layouts.png" alt="One tab of four panes before and after applying main-left" width="520"></td>
+<td valign="top" width="36%">
+
+#### Layouts
+
+Rearrange the panes you already have into a preset or saved shape. No restarts; undo any time.
+
+`heelr apply main-left`, undo with `heelr back`
+
+</td>
+</tr>
+<tr>
+<td valign="top" width="36%">
+
+#### Layout carousel
+
+Browse presets and your saved layouts in a popup, then apply one with Enter.
+
+`prefix+m` (or `heelr pick`)
+
+</td>
+<td><img src="docs/images/carousel.png" alt="The carousel on a saved layout called review-desk, between the grid and agents-logs presets" width="520"></td>
+</tr>
+<tr>
+<td><img src="docs/images/sidebar.png" alt="The sidebar and tab bar: a sleeping search-index tab, a billing-export tab marked with two foreign panes, and coloured tab names" width="520"></td>
+<td valign="top" width="36%">
+
+#### Sleep, tab marks, tab colours
+
+A 💤 marks a sleeping tab. ` ↗N` counts the panes in a tab that belong elsewhere. The tab-colours plugin gives each tab a stable colour in the sidebar.
+
+`prefix+shift+z` to sleep or wake; marks and colours are automatic
+
+</td>
+</tr>
+<tr>
+<td valign="top" width="36%">
+
+#### Inspect
+
+Draw the focused tab with each pane's detected role, or draw any layout.
+
+`heelr current`, `heelr show grid -n 5`
+
+</td>
+<td><img src="docs/images/current.png" alt="The output of heelr current in a terminal pane: a diagram of four panes labelled agent, agent, logs and shell" width="520"></td>
+</tr>
+</table>
 
 ## Requirements
 
