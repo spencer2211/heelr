@@ -52,7 +52,7 @@ auto_switch = false
 [[keys.command]]
 key = "prefix+m"
 type = "popup"
-command = "printf '\\\\033[?25l'; heelr pick"
+command = "heelr pick"
 width = 96
 height = 16
 """
