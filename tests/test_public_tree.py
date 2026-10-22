@@ -22,12 +22,10 @@ def tracked():
 
 
 # Paths built from fragments so this file does not match its own reference scan.
-_SR, _UP, _HX = "sub" + "reaper", "herdr" + "-upgrade", "hx" + "-setup"
+_SR, _UP = "sub" + "reaper", "herdr" + "-upgrade"
 REMOVED = [
     "bin/herdr-" + _SR, "bin/" + _UP, "tests/test_herdr_" + "upgrade.py",
-    "docs/spikes/2026-10-01-" + _UP + "-automation.md",
-    "docs/spikes/2026-10-01-same-version-handoff.md",
-    "docs/spikes/2026-10-01-" + _HX + ".sh", ".mcp" + ".json",
+    ".mcp" + ".json",
 ]
 
 
@@ -40,7 +38,7 @@ def test_personal_tooling_not_tracked():
 def test_no_references_to_removed_tooling():
     # Built from fragments so this file does not match itself.
     needles = ["sub" + "reaper", "herdr" + "-upgrade", "herdr" + "_upgrade", "hx" + "-setup"]
-    skip = ("docs/plans/", "docs/research/")
+    skip = ("docs/research/",)
     hits = []
     for name in tracked():
         if name.startswith(skip) or name in ("tasks.md", "CHANGELOG.md"):
@@ -58,6 +56,12 @@ def test_private_files_are_gitignored():
     lines = (ROOT / ".gitignore").read_text().split("\n")
     assert "tasks.md" in lines
     assert "docs/research/" in lines
+    assert "docs/plans/" in lines
+    assert "docs/spikes/" in lines
+
+
+def test_design_notes_not_tracked():
+    assert [p for p in tracked() if p.startswith(("docs/plans/", "docs/spikes/"))] == []
 
 
 UUID4 = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")
