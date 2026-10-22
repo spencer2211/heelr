@@ -4,4 +4,6 @@ __pycache__/
 .claude/worktrees/
 tasks.md
 docs/research/
+docs/plans/
+docs/spikes/
 .privacy-deny
