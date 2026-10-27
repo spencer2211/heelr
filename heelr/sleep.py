@@ -1,5 +1,5 @@
 """Tab sleep and wake: end a tab's idle, named Claude agents to free their memory, and
-resume them in the same panes later. Design: docs/plans/2026-10-04-tab-sleep-design.md.
+resume them in the same panes later.
 
 Process facts come from /proc and `pane process-info`, never from Herdr's agent flag
 alone: Claude's Herdr hook reports only SessionStart, so after an exit the flag is stale.
